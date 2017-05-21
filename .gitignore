@@ -1,0 +1,6 @@
+vendor
+vendor/*
+Config/config.php
+Config/~test.php
+assets/
+Media/
