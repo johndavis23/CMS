@@ -1,7 +1,15 @@
 <?php
+namespace App\Models;
+
+use App\Classes\Model;
+use App\Classes\FormBuilder;
+use App\Classes\Form\Elements\TextElement;
+use App\Classes\Form\Elements\PasswordElement;
+use App\Classes\Form\Elements\Checkbox;
+use App\Util\UrlUtils;
+use App\Models\MemberModel;
+
 include_once("Config/config.php");
-include_once("Classes/Model.php");
-include_once("Models/MemberModel.php");
 #################################
 // Model
 #################################
@@ -12,7 +20,7 @@ class PostModel extends Model
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        parent::__construct('smf_messages', 'id_msg');
+        parent::__construct('smf_messages', 'id_msg', 'smf');
     }
     public function read(array $where) {
         $results = parent::read($where);

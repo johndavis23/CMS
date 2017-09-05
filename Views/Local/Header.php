@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-
+<?php use App\Util\UrlUtils; ?>
 <head>
 
     <meta charset="utf-8">
@@ -8,11 +8,11 @@
 
     <title>INSPINIA | Forum</title>
 
-    <link href="/pestblog/Barebones-SMF/Media/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/pestblog/Barebones-SMF/Media/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="<?= UrlUtils::getAssetsUrl() ?>../Media/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?= UrlUtils::getAssetsUrl() ?>../Media/font-awesome/css/font-awesome.css" rel="stylesheet">
 
-    <link href="/pestblog/Barebones-SMF/Media/css/animate.css" rel="stylesheet">
-    <link href="/pestblog/Barebones-SMF/Media/css/style.css" rel="stylesheet">
+    <link href="<?= UrlUtils::getAssetsUrl() ?>../Media/css/animate.css" rel="stylesheet">
+    <link href="<?= UrlUtils::getAssetsUrl() ?>../Media/css/style.css" rel="stylesheet">
 
 </head>
 

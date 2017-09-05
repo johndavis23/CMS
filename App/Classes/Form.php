@@ -23,13 +23,10 @@ class FormBuilder {
 
     public function post()
     {
-        if(!empty($_POST))
-        {
+        if (!empty($_POST)) {
             $this->validateToken();
-            foreach($this->elements as $element)
-            {
-                if(!$element->validate())
-                {
+            foreach ($this->elements as $element) {
+                if (!$element->validate()) {
                     $element->renderError();
                     return false;
                 }
@@ -45,14 +42,14 @@ class FormBuilder {
         $token = bin2hex(
             openssl_random_pseudo_bytes(static::UNIQUE_CODE_LENGTH)
         );
-        $this->token      = $token;
+        $this->token = $token;
         $this->elements[] = new UniqueCodeElement($code);
         $_SESSION['form_tokens'][] = $token;
     }
 
     private function validateToken()
     {
-        if(isset($_POST['uc'])) {
+        if (isset($_POST['uc'])) {
             $token = $_POST['uc'];
         } else {
             return false;

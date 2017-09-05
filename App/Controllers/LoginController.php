@@ -109,7 +109,7 @@ class LoginController extends Controller
     protected function renderForms()
     {
         $form = $this->getLoginForm()->render(true);
-     //   $form.= $this->getRegisterForm()->render(true);
+        $form.= $this->getRegisterForm()->render(true);
         $this->view->render('Login/html', ['form'=>$form]);
 
     }

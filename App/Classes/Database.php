@@ -23,41 +23,39 @@ include_once('Config/config.php');
 //our exceptions
 class DataException 	extends \Exception {}
 class SQLDataException 	extends DataException{}
-	
+
 
 class Database 
 {
     protected static $instances;
-	
-	//Connection Settings
+
+    //Connection Settings
     protected $server;
     protected $username;
     protected $password;
     protected $name;
-	
-	//Connection Variables
+
+    //Connection Variables
     protected $databaseConnection;
     protected $results;
     protected $resultCount;
-    protected $connected  	= false;
+    protected $connected = false;
     protected $error; 
     protected $insertId;
-	
+
     
     public static function getDatabase($database_id = "default")
     {
       
         global $DATABASES; 
-		//is our database an actual database? No? Use our default.
-        if (!isset($DATABASES[$database_id]))
-        {
-			Util::error_log("Tried to select non-configured database: $database_id. "); 
+        //is our database an actual database? No? Use our default.
+        if (!isset($DATABASES[$database_id])) {
+            Util::error_log("Tried to select non-configured database: $database_id. ");
             $database_id = "default";
         }
-		
+
         //do we have a database connection already? if not, make it
-        if (null === static::$instances[$database_id]) 
-        {
+        if (null === static::$instances[$database_id]) {
             static::$instances[$database_id] 		 	= new static();
             static::$instances[$database_id]->server    = $DATABASES[$database_id][0];
             static::$instances[$database_id]->username  = $DATABASES[$database_id][1];
@@ -75,108 +73,108 @@ class Database
     
     public function beginTransaction()
     {
-         $this->databaseConnection->autocommit(FALSE);
+         $this->databaseConnection->autocommit(false);
     }
-	
+
     public function endTransaction($rollback = false)
     {
-        if($rollback)
-        {
+        if ($rollback) {
             $this->databaseConnection->rollback();
-            $this->databaseConnection->autocommit(TRUE); 
-        }else
-        {
+            $this->databaseConnection->autocommit(true);
+        } else {
             $this->databaseConnection->commit();
-            $this->databaseConnection->autocommit(TRUE); 
+            $this->databaseConnection->autocommit(true);
         }
         
     }
     
     public function query($query, $large = false)
     {
-	   	$this->connectIfNotConnected();
-		$this->result =  $this->databaseConnection->query($query, $large ? MYSQLI_USE_RESULT : null);   
-        if($this->result) 
-        {
-           return $this->getResults();
+        $this->connectIfNotConnected();
+        $this->result =  $this->databaseConnection->query($query, $large ? MYSQLI_USE_RESULT : null);
+        if ($this->result) {
+            return $this->getResults();
         }
         return false;
     }
-	
-	public function preparedQuery($query, $types, $params)
+
+    public function preparedQuery($query, $types, $params)
     {
-    	if (! extension_loaded('mysqlnd')) 
-		{
-			throw new DataException("This framework requires mysqlnd.");
-		}
-		
+        if (! extension_loaded('mysqlnd') ) {
+            throw new DataException("This framework requires mysqlnd.");
+        }
+
         $args  = func_get_args();
         $query = array_shift($args);
         $types = array_shift($args);
-	
+
         $this->connectIfNotConnected();
-	
+
+        if (!$this->databaseConnection) {
+            throw new DataException("Database Connection Failed");
+        }
+
         $stmt = $this->databaseConnection->prepare($query);
-	
-        if($stmt == false)
-        {
-        	throw new SQLDataException("SQL Statement Error: ".$this->databaseConnection->error." for Query: $query");
+
+        if ($stmt == false) {
+            throw new SQLDataException("SQL Statement Error: ".$this->databaseConnection->error." for Query: $query");
         }
 
         $stmtResult = $this->bindParameters($stmt, $args, $types);
+
+        if (!$stmtResult) {
+            throw new DataException("Parameter Binding Failed");
+        }
+
         $stmt->execute();
-	    
-		
-        $this->result 	= $stmt->get_result();
-        $out 			= $this->getResults();
-			
-		if(isset($this->databaseConnection->error) | isset($stmt->error))
-        $this->error 	= $this->databaseConnection->error . $stmt->error;
+
+        if ($stmt == false) {
+            throw new DataException("Execute Failed");
+        }
+
+        $this->result   = $stmt->get_result();
+        $out            = $this->getResults();
+
+        if(isset($this->databaseConnection->error) | isset($stmt->error))
+        $this->error    = $this->databaseConnection->error . $stmt->error;
         $this->insertId = $stmt->insert_id;
-		//$stmt->free();
+        //$stmt->free();
         //$stmt->close();
-		
+
         return $out;
         
     }
-	
+
     public function getCount()
     {
-		if(isset($this->resultCount))
-        	return $this->resultCount;
-		return false;
+        if(isset($this->resultCount))
+            return $this->resultCount;
+        return false;
     }
-	
-	public function getInsertId()
-	{
-		if(isset($this->insertId))
-			return $this->insertId;
-		return false;
-	}
-	
-	/*********** Private Functions ***********/
-	private function connect()
+
+    public function getInsertId()
     {
-    	
+        if(isset($this->insertId))
+            return $this->insertId;
+        return false;
+    }
+
+    /*********** Private Functions ***********/
+    private function connect()
+    {
+
         $this->databaseConnection = new \mysqli($this->server, $this->username, $this->password, $this->name);
        
-        if ($this->databaseConnection->connect_error) 
-        {
-        	throw new DataException("Database Connection failed: ". $this->databaseConnection->connect_error);
-            
+        if ($this->databaseConnection->connect_error) {
             $this->connected = false;
-        }
-        else
-        {
-            if($this->databaseConnection)
-            {
+            throw new DataException("Database Connection failed: ". $this->databaseConnection->connect_error);
+        } else {
+            if ($this->databaseConnection) {
                 $this->connected = true; 
-            }
-            else
-            {
+            } else {
                 $this->connected = false;
-				
-				throw new DataException("No Database Connection");
+
+                throw new DataException("No Database Connection");
             }
         }
     }
@@ -190,70 +188,59 @@ class Database
     }
     
     
-	private function connectIfNotConnected()
-	{
-		if(! $this->connected)
-        {
+    private function connectIfNotConnected()
+    {
+        if (! $this->connected) {
             $this->connect();
         }
-	}
-	
-	private function bindParameters( $stmt, $args, $types)
-	{
+    }
+
+    private function bindParameters( $stmt, $args, $types)
+    {
         $bind_params[] =   & $types;
         $values = [];
         $i = 0;
-		
-		//construct parameter array
-        foreach($args as $value)
-        {
+
+        //construct parameter array
+        foreach ($args as $value) {
            
             $values[] = $value;
             $bind_params[] = &$values[$i];
             $i++;
         }
         $result = false;
-		
-        if($types != null)
-        {
+
+        if ($types != null) {
             $result = call_user_func_array(array($stmt, 'bind_param'), $bind_params);
+        } else {
+            throw new DataException("Type string not supplied for Binding Parameters");
         }
-		else 
-		{
-			throw new DataException("Type string not supplied for Binding Parameters");
-		}
-		
-        if (!$result) 
-        {
-        	throw new SQLDataException("Error on MYSQL binding.");
+
+        if (!$result) {
+            throw new SQLDataException("Error on MYSQL binding.");
         }
-		
-        if(strlen($types) != count($args))
-        {    
+
+        if (strlen($types) != count($args)) {
             Util::error_log("Number of parameters does not match number of types in Query.");
-			//soft fail. Let the developer know.
+            //soft fail. Let the developer know.
         }
-		
-		return $result;
-	}
-	
+
+        return $result;
+    }
+
     private function getResults()
-	{
-		
-		$out = [];
-		if($this->result)
-        {
-            while($row = $this->result->fetch_array(MYSQLI_ASSOC)) 
-            {
+    {
+
+        $out = [];
+        if ($this->result) {
+            while ($row = $this->result->fetch_array(MYSQLI_ASSOC)) {
                 array_push($out, $row);
             }
-			
+
             return $out;
+        } elseif (isset($this->error) & !empty($this->error)) {
+            throw new SQLDataException("Error on retrieving results: (".$this->error.")");
         }
-        elseif(isset($this->error) & !empty($this->error))
-        {
-        	throw new SQLDataException("Error on retrieving results: (".$this->error.")");
-        }
-		return $out;
-	}
+        return $out;
+    }
 }

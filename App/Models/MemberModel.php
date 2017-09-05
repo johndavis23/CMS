@@ -1,6 +1,9 @@
 <?php
+namespace App\Models;
+
+use App\Classes\Model;
 include_once("Config/config.php");
-include_once("Classes/Model.php");
+
 
 #################################
 // Model
@@ -10,11 +13,7 @@ class MemberModel extends Model
     function __construct()
     {
 
-        if (session_status() === PHP_SESSION_NONE)
-        {
-            session_start();
-        }
-        parent::__construct('smf_members', 'id_member');
+        parent::__construct('smf_members', 'id_member', 'smf');
     }
     /*public function read() { TODO FIND OUT OUR SIGNATURE
 

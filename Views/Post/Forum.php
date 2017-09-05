@@ -1,6 +1,18 @@
 <?php $this->render("Local/Header", ["title"=> "Forum", "description"=>"Please select a board"]); ?>
-
-
+<?php
+function formatLarge($num) {
+    $x = round($num);
+    $x_number_format = number_format($x);
+    $x_array = explode(',', $x_number_format);
+    $x_parts = array('k', 'm', 'b', 't');
+    $x_count_parts = count($x_array) - 1;
+    $x_display = $x;
+    $x_display = $x_array[0] . ((int) $x_array[1][0] !== 0 ? '.' . $x_array[1][0] : '');
+    $x_display .= $x_parts[$x_count_parts - 1];
+    return $x_display;
+}
+?>
+<?php use App\Util\UrlUtils; ?>
 <div class="forum-title">
     <div class="pull-right forum-desc">
         <samll>Total posts: 320,800</samll>
@@ -15,20 +27,15 @@
                 <div class="forum-icon">
                     <i class="fa fa-shield"></i>
                 </div>
-                <a href="/pestblog/Barebones-SMF/index.php/Forum/Board/<?= $board['id_board'] ?>/<?= urlencode($board['name']) ?>" class="forum-item-title"><?= $board['name'] ?></a>
+                <a href="<?= UrlUtils::getControllerUrl('Forum/Board'); ?><?= $board['id_board'] ?>/<?= urlencode($board['name']) ?>" class="forum-item-title"><?= $board['name'] ?></a>
                 <div class="forum-sub-title"><?= $board['description'] ?></div>
             </div>
             <div class="col-md-1 forum-info">
-                        <span class="views-number">
-                            1216
-                        </span>
-                <div>
-                    <small>Views</small>
-                </div>
+
             </div>
             <div class="col-md-1 forum-info">
                         <span class="views-number">
-                            368
+                             <?= formatLarge($board['num_topics']) ?>
                         </span>
                 <div>
                     <small>Topics</small>
@@ -36,7 +43,7 @@
             </div>
             <div class="col-md-1 forum-info">
                         <span class="views-number">
-                            140
+                            <?= formatLarge($board['num_posts']) ?>
                         </span>
                 <div>
                     <small>Posts</small>

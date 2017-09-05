@@ -15,22 +15,24 @@ include_once("Config/config.php");
         $first = true;
         $bts =  debug_backtrace();
         $stack_trace_string = "Stack Trace: \n";
-        foreach($bts as $bt)
-        {
-            if(!$first){$first = false;}else{
+        foreach ($bts as $bt) {
+            if (!$first) {
+                $first = false;
+            } else {
                 $stack_trace_string.="From: ". $bt['file'] . " on Line:  (". $bt['line'].")\n";
             }
         }
         error_log("\n".$message."\n".$stack_trace_string);
     }
-	
+
     public static function error_log_stacktrace()
     {
         $first = true;
         $bts =  debug_backtrace();
-        foreach($bts as $bt)
-        {
-            if(!$first){$first = false;}else{
+        foreach ($bts as $bt) {
+            if (!$first) {
+                $first = false;
+            } else {
                 error_log("Called from: ". $bt['file'] . ' line  '. $bt['line']);
             }
         }
@@ -39,18 +41,17 @@ include_once("Config/config.php");
    
     public static function is_running($PID)
     {
-    	if(is_int($PID))
-		{
-           exec("ps $PID", $ProcessState);
-           return(count($ProcessState) >= 2);
-		}
-		return false;
+        if (is_int($PID)) {
+            exec("ps $PID", $ProcessState);
+            return(count($ProcessState) >= 2);
+        }
+        return false;
     } 
     public static function curl($url) 
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $data = curl_exec($ch);
         curl_close($ch);
 
@@ -79,16 +80,15 @@ include_once("Config/config.php");
         $getemail = explode("@",$to);
  
         //send only if there is one email
-        if(sizeof($getemail) > 2)
-        {
+        if (sizeof($getemail) > 2) {
             return false;
         }
         
         //now we are ready to send mail
         $sent = mail($to, $subject, $msg, $headers);
-        if($sent){
+        if ($sent) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

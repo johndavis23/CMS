@@ -13,9 +13,7 @@
                         }
                         ?>
                     </ul>
-before
+
                     <?php
                     $this->render("Local/Footer", []);
                     ?>
-after
-                

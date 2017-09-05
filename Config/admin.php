@@ -14,6 +14,20 @@ $admin = [
         ],
 
     ],
+    'Forum' => [
+        "Boards" => [
+            "icon"   => "fa fa-files-o",
+            "submenu" => [
+                "Add A New Board" => [
+                    "action" => "Admin/Create/Board",
+                ],
+                "List Boards" => [
+                    "action" => "Admin/Read/Board",
+                ]
+            ]
+        ],
+
+    ],
     'Account' => [
         "Logout" => [
             "action" => "Login/Logout",

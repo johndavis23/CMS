@@ -8,12 +8,21 @@ class ViewException extends \Exception{}
 
 class View
 {
-	
+    protected $js ='';
 	function __construct()
 	{
 		
 	}
-	
+    function registerJS($js)
+    {
+        $this->js .=$js;
+    }
+    function printJS()
+    {
+        echo "<script>";
+        echo $this->js;
+        echo "</script>";
+    }
 	function redirect($url)
 	{
 		 header("Location: $url");
